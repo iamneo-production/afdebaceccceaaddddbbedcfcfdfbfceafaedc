@@ -10,7 +10,7 @@ import com.examly.springapp.data.payloads.response.MessageResponse;
 import org.springframework.stereotype.Component;
 
 @Component
-public interface TaskService {
+public interface SpringappService {
     MessageResponse createTask(TaskRequest taskrequest);
     Optional<Task> updateTask(Integer taskId, TaskRequest taskrequest);
     void deleteTask(Integer id);
