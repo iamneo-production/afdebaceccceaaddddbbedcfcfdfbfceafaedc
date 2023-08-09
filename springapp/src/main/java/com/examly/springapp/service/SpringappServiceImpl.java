@@ -1,55 +1,43 @@
 package com.examly.springapp.service;
-
 import java.util.List;
 import java.util.Optional;
-
-import com.examly.springapp.data.models.Task;
-import com.examly.springapp.data.payloads.request.TaskRequest;
-import com.examly.springapp.data.payloads.response.MessageResponse;
-import com.examly.springapp.data.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
+import com.examly.springapp.model.Springapp;
+import com.examly.springapp.repository.SpringappRepository;
 @Service
 public class SpringappServiceImpl implements SpringappService {
-
-    @Autowired
-    TaskRepository taskRepository;
-
-    @Override
-    public MessageResponse createTask(TaskRequest taskrequest) {
-        Task newTask = new Task();
-        newTask.setTaskId(taskrequest.getTaskId());
-        newTask.setTaskName(taskrequest.getTaskName());
-        newTask.setTaskDate(taskrequest.getTaskDate());
-        newTask.setTaskHolderName(taskrequest.getTaskHolderName());
-        newTask.setTaskStatus(taskrequest.getTaskStatus());
-        taskRepository.save(newTask);
-        return new MessageResponse("New Task created succcessfully");
-    }
-
-    @Override
-    public Optional<Task> updateTask(Integer taskId, TaskRequest taskrequest) {
-        Optional<Task> task = taskRepository.findById(taskId);
-        task.get().setTaskStatus(taskrequest.getTaskStatus());
-        taskRepository.save(task.get());
-        return task;
-    }
-
-    @Override
-    public void deleteTask(Integer id) {
-        taskRepository.deleteById(id);
-    }
-
-    @Override
-    public Task getASingleTask(Integer id) {
-        return taskRepository.findById(id).get();
-    }
-
-    @Override
-    public List<Task> getAllTask() {
-        return taskRepository.findAll();
-    }
-    
+	@Autowired
+	private SpringappRepository springapprep;
+	@Override
+	public List<Springapp> alltasks(){
+		return springapprep.findAll();
+	}
+	@Override
+	public void saveTask(Springapp springapp) {
+		this.springapprep.save(springapp);
+	}
+	@Override
+	public Springapp getTaskById(long ID) {
+		return springapprep.findById((int) ID).orElseThrow();
+	}
+@Override
+public void deleteTask(long ID) {
+	this.springapprep.deleteById((int) ID);
 }
+@Override
+public void changeStatus(Springapp sp){
+	this.springapprep.save(sp);
+}
+@Override
+public Page<Springapp> findPaginated(int pageNo,int ps, String sortf, String sortd){
+	Sort s=sortd.equalsIgnoreCase(Sort.Direction.ASC.name())?Sort.by(sortf).ascending():Sort.by(sortf).descending();
+	Pageable pga=PageRequest.of(pageNo-1, ps,s);
+	return this.springapprep.findAll(pga);
+}
+}
+
